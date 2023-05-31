@@ -7,39 +7,42 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("1 - Создать задачу");
-            System.out.println("2 - Удалить задачу");
-            System.out.println("3 - Обновить задачу");
-            System.out.println("4 - Посмотреть все задачи");
-            System.out.println("5 - Удалить все задачи");
-            System.out.println("6 - Посмотреть задачу");
-            System.out.println("7 - Посмотреть все подзадачи эпика");
-            System.out.println("0 - выход");
+            System.out.println("1 - РЎРѕР·РґР°С‚СЊ Р·Р°РґР°С‡Сѓ");
+            System.out.println("2 - РЈРґР°Р»РёС‚СЊ Р·Р°РґР°С‡Сѓ");
+            System.out.println("3 - РћР±РЅРѕРІРёС‚СЊ Р·Р°РґР°С‡Сѓ");
+            System.out.println("4 - РџРѕСЃРјРѕС‚СЂРµС‚СЊ РІСЃРµ Р·Р°РґР°С‡Рё");
+            System.out.println("5 - РЈРґР°Р»РёС‚СЊ РІСЃРµ Р·Р°РґР°С‡Рё");
+            System.out.println("6 - РџРѕСЃРјРѕС‚СЂРµС‚СЊ Р·Р°РґР°С‡Сѓ");
+            System.out.println("7 - РџРѕСЃРјРѕС‚СЂРµС‚СЊ РІСЃРµ РїРѕРґР·Р°РґР°С‡Рё СЌРїРёРєР°");
+            System.out.println("0 - РІС‹С…РѕРґ");
             int answer = scanner.nextInt();
+            Task task = null;
 
             switch (answer) {
                 case (1):
-                    manager.createTask();
+                    manager.createTask(task);
                     break;
                 case (2):
-                    System.out.println("Какую задачу хотите удалить?");
+                    System.out.println("РљР°РєСѓСЋ Р·Р°РґР°С‡Сѓ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ?");
                     manager.removeTusk(scanner.nextInt());
                     break;
                 case (3):
-                    manager.updateTask();
+                    manager.updateTask(task);
                     break;
                 case (4):
-                    manager.printAllTasks();
+                    System.out.println(manager.getAllTasks());
+                    System.out.println(manager.getAllEpic());
+                    System.out.println(manager.getAllSubtasks());
                     break;
                 case (5):
                     manager.removeAllTasks();
                     break;
                 case (6):
-                    System.out.println("Какую задачу показать?");
+                    System.out.println("РљР°РєСѓСЋ Р·Р°РґР°С‡Сѓ РїРѕРєР°Р·Р°С‚СЊ?");
                     System.out.println(manager.getTask(scanner.nextInt()));
                     break;
                 case (7):
-                    System.out.println("Подзадачи какого эпика показать?");
+                    System.out.println("РџРѕРґР·Р°РґР°С‡Рё РєР°РєРѕРіРѕ СЌРїРёРєР° РїРѕРєР°Р·Р°С‚СЊ?");
                     manager.getEpicSubtasks(scanner.nextInt());
                     break;
                 case (0):

@@ -12,7 +12,7 @@ public class Epic extends Task {
     public String toString() {
         return "Epic{" +
                 "listTasks.size =" + listTasks.size() +
-                ", status='" + this.getStatus() +
+                ", status='" + status +
                 "} ";
     }
 
@@ -24,7 +24,7 @@ public class Epic extends Task {
         return listTasks;
     }
 
-    public Subtask getSubtask (int ID) {
+    public Subtask getSubtask(int ID) {
         for (Subtask subtask : listTasks) {
             if (subtask.getID() == ID)
                 return subtask;
@@ -32,30 +32,27 @@ public class Epic extends Task {
         return null;
     }
 
-    public void removeSubtask (int ID) {
+    public void removeSubtask(int ID) {
         listTasks.removeIf(subtask -> subtask.getID() == ID);
     }
 
     public void updateStatus() {
-        boolean isNew = false;
-        boolean isDone = false;
+        boolean isNew = true;
+        boolean isDone = true;
 
         if (!listTasks.isEmpty()) {
-            for (Subtask subtask : listTasks)
-                if (subtask.getStatus().equals("NEW"))
+            for (Subtask subtask : listTasks) {
+                if (subtask.getStatus().equals("NEW") && isNew)
                     isNew = true;
-                else {
+                else
                     isNew = false;
-                    break;
-                }
 
-            for (Subtask subtask : listTasks)
-                if (subtask.getStatus().equals("DONE"))
+                if (subtask.getStatus().equals("DONE") && isDone)
                     isDone = true;
                 else {
                     isDone = false;
-                    break;
                 }
+            }
         } else
             this.setStatus("NEW");
 

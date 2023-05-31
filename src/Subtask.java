@@ -5,7 +5,7 @@ public class Subtask extends Task {
     }
 
     private String nameEpic;
-    int idEpic;
+    private int idEpic;
 
     private String getNameEpic() {
         return nameEpic;
@@ -19,10 +19,10 @@ public class Subtask extends Task {
     public String toString() {
         return "Subtask{" +
                 "inEpic='" + nameEpic + '\'' +
-                ", name='" + getName() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", ID=" + getID() +
-                ", status='" + getStatus() + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", ID=" + ID +
+                ", status='" + status + '\'' +
                 "}";
     }
 
