@@ -43,105 +43,50 @@ public class Manager {
         return epic.getListTasks();
     }
 
-    public Task createTask(Task task) {
+    public void createTask(Task task) {
         ID++;
         //Создаем задачу
         task.setID(ID);
         mapTasks.put(ID, task);
         System.out.println("Задача создана");
-
-        return task;
     }
 
-    public Subtask createSubtask(Subtask subtask, String nameEpic, int epicID) {
+    public Subtask createSubtask(Subtask subtask, int epicID) {
         ID++;
         //Создаем подзадачу
         subtask.setID(ID);
-        subtask.setNameEpic(nameEpic);
         subtask.setIdEpic(epicID);
         mapSubtask.put(subtask.getID(), subtask);
+        mapEpic.get(subtask.getIdEpic()).updateStatus();
         System.out.println("Подзадача создана");
 
         return subtask;
     }
 
-    public Epic createEpic(Epic epic) {
+    public void createEpic(Epic epic) {
         ID++;
         epic.setID(ID);
         mapEpic.put(ID, epic);
-        return epic;
     }
 
     public void updateTask(Task task) {
-        System.out.println("Какую задачу хотите обновить?");
-        int number = 1;
-        while (true) {
-            System.out.println("1 - изменить название");
-            System.out.println("2 - изменить описание");
-            System.out.println("3 - изменить статус");
-            System.out.println("4 - добавить подзадачу");
-            System.out.println("0 - выход ");
-
-            int answer = 4;
-
-            if (mapTasks.containsKey(number))
-                task = mapTasks.get(number);
-            else
-                return;
-
-            switch (answer) {
-                case (1):
-                    System.out.println("Введите новое название задачи");
-                    String name = "TEST";
-                    task.setName(name);
-                    break;
-                case (2):
-                    System.out.println("Введите новое описание задачи");
-                    String description = "TEST";
-                    task.setDescription(description);
-                    break;
-                case (3):
-                    System.out.println("Введите новый статус задачи");
-                    String status = "NEW";
-                    task.setStatus(status);
-                    //Если изменили подзадачу, обновляем статус эпика
-                    if (task.getClass().toString().equals("class Subtask")) {
-                        Subtask subtask = (Subtask) task;
-                        Epic epic = mapEpic.get(subtask.getIdEpic());
-                        epic.updateStatus();
-                    }
-                    break;
-                case (4):
-                    if (task.getClass().toString().equals("class Task")) {
-                        Epic epic = new Epic(task.getName(), task.getDescription(), task.getID(), task.getStatus());
-                        Subtask subtask = null;
-                        epic.putSubtask(createSubtask(subtask, epic.getName(), epic.getID()));
-                        epic.updateStatus();
-                        removeTusk(number);
-                        mapEpic.put(epic.getID(), epic);
-                    } else {
-                        Epic epic = mapEpic.get(number);
-                        Subtask subtask = null;
-                        epic.putSubtask(createSubtask(subtask, epic.getName(), epic.getID()));
-                        epic.updateStatus();
-                    }
-                    break;
-                case (0):
-                    return;
-            }
-        }
+        if (mapTasks.containsKey(task.getID()))
+            mapTasks.put(task.getID(), task);
+        else
+            return;
     }
 
     public void updateEpic(Epic epic) {
         if (mapEpic.containsKey(epic.getID())) {
-            //do something
+            mapEpic.put(epic.getID(),epic);
         } else
             return;
     }
 
     public void updateSubtask(Subtask subtask) {
         if (mapSubtask.containsKey(subtask.getID())) {
-            //do something
+            mapSubtask.put(subtask.getID(),subtask);
+            mapEpic.get(subtask.getIdEpic()).updateStatus();
         } else
             return;
     }

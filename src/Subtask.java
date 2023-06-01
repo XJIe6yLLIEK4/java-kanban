@@ -4,21 +4,12 @@ public class Subtask extends Task {
         super(name, description, ID, status);
     }
 
-    private String nameEpic;
     private int idEpic;
-
-    private String getNameEpic() {
-        return nameEpic;
-    }
-
-    public void setNameEpic(String inEpic) {
-        this.nameEpic = inEpic;
-    }
 
     @Override
     public String toString() {
         return "Subtask{" +
-                "inEpic='" + nameEpic + '\'' +
+                "idEpic=" + idEpic +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", ID=" + ID +
