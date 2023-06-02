@@ -16,7 +16,7 @@ public class Main {
             System.out.println("7 - Посмотреть все подзадачи эпика");
             System.out.println("0 - выход");
             int answer = scanner.nextInt();
-            Task task = null;
+            Task task = new Task("TestTask", "description", 0, "NEW");
 
             switch (answer) {
                 case (1):
@@ -24,7 +24,7 @@ public class Main {
                     break;
                 case (2):
                     System.out.println("Какую задачу хотите удалить?");
-                    manager.removeTusk(scanner.nextInt());
+                    manager.removeTask(scanner.nextInt());
                     break;
                 case (3):
                     manager.updateTask(task);
