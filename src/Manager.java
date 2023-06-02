@@ -51,7 +51,7 @@ public class Manager {
         System.out.println("Задача создана");
     }
 
-    public Subtask createSubtask(Subtask subtask, int epicID) {
+    public void createSubtask(Subtask subtask, int epicID) {
         ID++;
         //Создаем подзадачу
         subtask.setID(ID);
@@ -59,8 +59,6 @@ public class Manager {
         mapSubtask.put(subtask.getID(), subtask);
         mapEpic.get(subtask.getIdEpic()).updateStatus();
         System.out.println("Подзадача создана");
-
-        return subtask;
     }
 
     public void createEpic(Epic epic) {
@@ -70,32 +68,40 @@ public class Manager {
     }
 
     public void updateTask(Task task) {
-        if (mapTasks.containsKey(task.getID()))
+        if (mapTasks.containsKey(task.getID())) {
             mapTasks.put(task.getID(), task);
-        else
+        } else {
             return;
+        }
     }
 
     public void updateEpic(Epic epic) {
         if (mapEpic.containsKey(epic.getID())) {
-            mapEpic.put(epic.getID(),epic);
-        } else
+            mapEpic.put(epic.getID(), epic);
+        } else {
             return;
+        }
     }
 
     public void updateSubtask(Subtask subtask) {
         if (mapSubtask.containsKey(subtask.getID())) {
-            mapSubtask.put(subtask.getID(),subtask);
+            mapSubtask.put(subtask.getID(), subtask);
             mapEpic.get(subtask.getIdEpic()).updateStatus();
-        } else
+        } else {
             return;
+        }
     }
 
-    public void removeTusk(int ID) {
+    public void removeTask(int ID) {
         mapTasks.remove(ID);
     }
 
     public void removeEpic(int ID) {
+        for (Subtask subtask : mapSubtask.values()) {
+            if (subtask.getIdEpic() == ID) {
+                mapSubtask.remove(subtask);
+            }
+        }
         mapEpic.remove(ID);
     }
 
