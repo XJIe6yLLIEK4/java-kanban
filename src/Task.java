@@ -11,6 +11,9 @@ public class Task {
         this.status = status;
     }
 
+    public Task(String testTask, String description, int id, TaskStatus status) {
+    }
+
     public String getName() {
         return name;
     }
