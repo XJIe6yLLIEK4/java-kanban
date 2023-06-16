@@ -1,11 +1,10 @@
+import model.Epic;
+import model.Subtask;
+import model.Task;
+
 import java.util.*;
 
 public interface TaskManager {
-    Map<Integer, Task> mapTasks = new HashMap<>();
-    Map<Integer, Epic> mapEpic = new HashMap<>();
-    Map<Integer, Subtask> mapSubtask = new HashMap<>();
-    List<Task> history = new ArrayList<>();
-    int ID = 0;
 
     List<Task> getAllTasks();
 

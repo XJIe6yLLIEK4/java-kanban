@@ -1,3 +1,6 @@
+import model.Task;
+import model.TaskStatus;
+
 import java.util.Scanner;
 
 public class Main {

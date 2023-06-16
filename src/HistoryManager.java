@@ -1,8 +1,8 @@
-import java.util.ArrayList;
+import model.Task;
+
 import java.util.List;
 
 public interface HistoryManager {
-    List<Task> history = new ArrayList<>();
 
     void add(Task task);
 

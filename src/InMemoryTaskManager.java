@@ -1,3 +1,7 @@
+import model.Epic;
+import model.Subtask;
+import model.Task;
+
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -31,19 +35,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(int ID) {
-        history.add(mapTasks.get(ID));
+        Managers.getDefaultHistory().add(mapTasks.get(ID));
         return mapTasks.get(ID);
     }
 
     @Override
     public Epic getEpic(int ID) {
-        history.add(mapEpic.get(ID));
+        Managers.getDefaultHistory().add(mapEpic.get(ID));
         return mapEpic.get(ID);
     }
 
     @Override
     public Subtask getSubtask(int ID) {
-        history.add(mapSubtask.get(ID));
+        Managers.getDefaultHistory().add(mapSubtask.get(ID));
         return mapSubtask.get(ID);
     }
 

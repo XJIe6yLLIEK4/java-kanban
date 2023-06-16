@@ -1,17 +1,22 @@
+import model.Task;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
+    List<Task> history = new ArrayList<>();
+
     @Override
     public List<Task> getHistory() {
-        if (history.size() > 10) {
-            int countSupertasks = history.size() - 10;
-            history.subList(0, (countSupertasks + 1)).clear();
-        }
         return history;
     }
 
+    @Override
     public void add(Task task) {
-
+        if (history.size() > 9) {
+            history.remove(0);
+        }
+        history.add(task);
     }
 }

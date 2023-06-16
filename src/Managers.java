@@ -1,7 +1,7 @@
 public final class Managers {
 
     public static TaskManager getDefault() {
-        TaskManager taskManager = null;
+        TaskManager taskManager = new InMemoryTaskManager();;
         return taskManager;
     }
 
