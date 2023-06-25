@@ -44,25 +44,25 @@ public class Epic extends Task {
 
         if (!listTasks.isEmpty()) {
             for (Subtask subtask : listTasks) {
-                if (subtask.getStatus().equals("NEW") && isNew)
+                if (subtask.getStatus() == TaskStatus.NEW && isNew)
                     isNew = true;
                 else
                     isNew = false;
 
-                if (subtask.getStatus().equals("DONE") && isDone)
+                if (subtask.getStatus() == TaskStatus.DONE && isDone)
                     isDone = true;
                 else {
                     isDone = false;
                 }
             }
         } else
-            this.setStatus("NEW");
+            this.setStatus(TaskStatus.NEW);
 
         if (isNew)
-            this.setStatus("NEW");
+            this.setStatus(TaskStatus.NEW);
         else if (isDone)
-            this.setStatus("DONE");
+            this.setStatus(TaskStatus.DONE);
         else
-            this.setStatus("IN_PROGRESS");
+            this.setStatus(TaskStatus.IN_PROGRESS);
     }
 }

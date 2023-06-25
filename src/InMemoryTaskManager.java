@@ -13,7 +13,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getAllTasks() {
-        return new ArrayList<>(mapTasks.values());
+        List<Task> allTask = new ArrayList<>();
+        allTask.addAll(mapTasks.values());
+        allTask.addAll(mapEpic.values());
+        allTask.addAll(mapSubtask.values());
+        return allTask;
     }
 
     @Override
@@ -122,6 +126,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeTask(int ID) {
         mapTasks.remove(ID);
+        historyManager.remove(ID);
     }
 
     @Override
@@ -129,9 +134,11 @@ public class InMemoryTaskManager implements TaskManager {
         for (Subtask subtask : mapSubtask.values()) {
             if (subtask.getIdEpic() == ID) {
                 mapSubtask.remove(subtask);
+                historyManager.remove(subtask.getID());
             }
         }
         mapEpic.remove(ID);
+        historyManager.remove(ID);
     }
 
     @Override
@@ -140,5 +147,6 @@ public class InMemoryTaskManager implements TaskManager {
         epic.removeSubtask(ID);
         epic.updateStatus();
         mapSubtask.remove(ID);
+        historyManager.remove(ID);
     }
 }
