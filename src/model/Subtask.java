@@ -10,13 +10,12 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "model.Subtask{" +
-                "idEpic=" + idEpic +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", ID=" + ID +
-                ", status='" + status + '\'' +
-                "}";
+        return ID + "," +
+                "Subtask," +
+                name + "," +
+                status + "," +
+                description + "," +
+                idEpic + ",";
     }
 
     public int getIdEpic() {

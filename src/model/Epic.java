@@ -12,10 +12,11 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "model.Epic{" +
-                "listTasks.size =" + listTasks.size() +
-                ", status='" + status +
-                "} ";
+        return ID + "," +
+                "Epic," +
+                name + "," +
+                status + "," +
+                description + ",";
     }
 
     public void putSubtask(Subtask subtask) {

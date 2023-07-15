@@ -1,13 +1,25 @@
+import model.Epic;
+import model.Subtask;
 import model.Task;
 import model.TaskStatus;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        InMemoryTaskManager manager = new InMemoryTaskManager();
         Scanner scanner = new Scanner(System.in);
+
+        FileBackedTasksManager manager;
+        try {
+            manager = new FileBackedTasksManager(Files.createFile(Paths.get("autoSave.txt")));
+        } catch (IOException e) {
+            System.out.println("Файл автосохранения уже создан");
+            manager = new FileBackedTasksManager("autoSave.txt");
+        }
 
         while (true) {
             System.out.println("1 - Создать задачу");

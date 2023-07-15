@@ -5,11 +5,15 @@ import model.Task;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private Map<Integer, Task> mapTasks = new HashMap<>();
-    private Map<Integer, Epic> mapEpic = new HashMap<>();
-    private Map<Integer, Subtask> mapSubtask = new HashMap<>();
+    private static Map<Integer, Task> mapTasks = new HashMap<>();
+    private static Map<Integer, Epic> mapEpic = new HashMap<>();
+    private static Map<Integer, Subtask> mapSubtask = new HashMap<>();
     private HistoryManager historyManager = Managers.getDefaultHistory();
     int ID = 0;
+
+    public HistoryManager getHistoryManager() {
+        return historyManager;
+    }
 
     @Override
     public List<Task> getAllTasks() {
@@ -18,6 +22,11 @@ public class InMemoryTaskManager implements TaskManager {
         allTask.addAll(mapEpic.values());
         allTask.addAll(mapSubtask.values());
         return allTask;
+    }
+
+    @Override
+    public List<Task> getAllTask() {
+        return new ArrayList<>(mapTasks.values());
     }
 
     @Override
@@ -93,6 +102,19 @@ public class InMemoryTaskManager implements TaskManager {
         ID++;
         epic.setID(ID);
         mapEpic.put(ID, epic);
+    }
+
+
+    public static void addTask(Task task) {
+        mapTasks.put(task.getID(), task);
+    }
+
+    public static void addEpic(Epic epic) {
+        mapEpic.put(epic.getID(), epic);
+    }
+
+    public static void addSubtask(Subtask subtask) {
+        mapSubtask.put(subtask.getID(), subtask);
     }
 
     @Override
