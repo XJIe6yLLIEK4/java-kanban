@@ -1,12 +1,10 @@
 public final class Managers {
 
-    public static TaskManager getDefault() {
-        TaskManager taskManager = new InMemoryTaskManager();;
-        return taskManager;
+    public static FileBackedTasksManager getDefault(String nameAutoSaveFile) {
+        return new FileBackedTasksManager(nameAutoSaveFile);
     }
 
     public static HistoryManager getDefaultHistory() {
-        InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
-        return inMemoryHistoryManager;
+        return new InMemoryHistoryManager();
     }
 }

@@ -1,31 +1,35 @@
+import exception.ManagerSaveException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
 import model.TaskStatus;
 
 import java.io.*;
-import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileBackedTasksManager extends InMemoryTaskManager{
+public class FileBackedTasksManager extends InMemoryTaskManager {
     private static File autoSave;
 
-    public FileBackedTasksManager(Path autoSave) {
-        this.autoSave = new File(String.valueOf(autoSave));
-    }
-
-    public FileBackedTasksManager (String nameAutoSaveFile) {
-        this.autoSave = new File(nameAutoSaveFile);
+    public FileBackedTasksManager(String nameAutoSaveFile) {
         try {
-            read(autoSave);
+            Files.createFile(Paths.get(nameAutoSaveFile));
+            this.autoSave = new File(nameAutoSaveFile);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Файл автосохранения уже создан");
+            this.autoSave = new File(nameAutoSaveFile);
+            try {
+                read(autoSave);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
-    public void save() {
-        try (FileWriter fileWriter = new FileWriter(autoSave)){
+    private void save() {
+        try (FileWriter fileWriter = new FileWriter(autoSave)) {
             //Записываем формат записи
             fileWriter.write("id,type,name,status,description,epic\n");
             //Записываем все задачи
@@ -36,7 +40,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
             fileWriter.write("\n");
             fileWriter.write(historyToString(getHistoryManager()));
         } catch (IOException e) {
-            System.out.println("Не удалось добавить запись в файл");
+            throw new ManagerSaveException("Не удалось добавить запись в файл");
         }
     }
 
@@ -57,15 +61,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
                     else if (task.getClass() == Subtask.class)
                         addSubtask((Subtask) task);
                     else
-                        System.out.println("Не удалось считать задачу");
+                        throw new ManagerSaveException("Не удалось считать задачу");
                 } else {
                     //если строка пустя значит следущая строка будет с историей, пропускаем пустую строку и считываем историю
                     String lineHistory = br.readLine();
-                    try {
-                        historyFromString(lineHistory);
-                    } catch (NullPointerException e) {
-                        System.out.println("История пуста");
-                    }
+                    historyFromString(lineHistory);
                 }
             }
         } catch (IOException e) {
@@ -73,22 +73,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         }
     }
 
-    public static Task fromString(String line) {
-            String[] DataString = line.split(",");
-            TaskStatus taskStatus = TaskStatus.valueOf(DataString[3]);
-            switch (DataString[1]) {
-                case ("Task"): {
-                    return new Task(DataString[2], DataString[4], Integer.parseInt(DataString[0]), taskStatus);
-                }
-                case ("Epic"): {
-                    return new Epic(DataString[2], DataString[4], Integer.parseInt(DataString[0]), taskStatus);
-                }
-                case ("Subtask"): {
-                    Subtask subtask = new Subtask(DataString[2], DataString[4], Integer.parseInt(DataString[0]), taskStatus);
-                    subtask.setIdEpic(Integer.parseInt(DataString[5]));
-                    return subtask;
-                }
+    private static Task fromString(String line) {
+        String[] dataString = line.split(",");
+        TaskStatus taskStatus = TaskStatus.valueOf(dataString[3]);
+        switch (dataString[1]) {
+            case ("Task"): {
+                return new Task(dataString[2], dataString[4], Integer.parseInt(dataString[0]), taskStatus);
             }
+            case ("Epic"): {
+                return new Epic(dataString[2], dataString[4], Integer.parseInt(dataString[0]), taskStatus);
+            }
+            case ("Subtask"): {
+                Subtask subtask = new Subtask(dataString[2], dataString[4], Integer.parseInt(dataString[0]), taskStatus);
+                subtask.setIdEpic(Integer.parseInt(dataString[5]));
+                return subtask;
+            }
+        }
         return null;
     }
 
