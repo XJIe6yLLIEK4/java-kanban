@@ -69,7 +69,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ManagerSaveException("Ошибка чтения файла");
         }
     }
 
@@ -92,14 +92,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return null;
     }
 
-    static String historyToString(HistoryManager manager) {
+    private static String historyToString(HistoryManager manager) {
         String history = "";
         for (Task task : manager.getHistory())
             history = task.getID() + "," + history;
         return history;
     }
 
-    static List<Integer> historyFromString(String value) {
+    private static List<Integer> historyFromString(String value) {
         List<Integer> history = new ArrayList<>();
         String[] strings = value.split(",");
         for (String string : strings)
