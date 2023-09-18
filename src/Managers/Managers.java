@@ -1,10 +1,14 @@
+package Managers;
+
+import Interface.HistoryManager;
+
 public final class Managers {
 
     public static FileBackedTasksManager getDefault(String nameAutoSaveFile) {
         return new FileBackedTasksManager(nameAutoSaveFile);
     }
 
-    public static HistoryManager getDefaultHistory() {
+    public static InMemoryHistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }
 }

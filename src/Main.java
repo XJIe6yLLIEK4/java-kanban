@@ -1,3 +1,4 @@
+import Managers.FileBackedTasksManager;
 import model.Task;
 import model.TaskStatus;
 import java.util.Scanner;
@@ -19,7 +20,7 @@ public class Main {
             System.out.println("7 - Посмотреть все подзадачи эпика");
             System.out.println("0 - выход");
             int answer = scanner.nextInt();
-            Task task = new Task("TestTask", "description", 0, TaskStatus.NEW);
+            Task task = new Task("TestTask", "description", TaskStatus.NEW);
 
             switch (answer) {
                 case (1):

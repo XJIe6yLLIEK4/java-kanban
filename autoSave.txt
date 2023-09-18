@@ -1,8 +1,8 @@
 id,type,name,status,description,epic
-1,Epic,aaa,NEW,пустой эпик,
-2,Epic,bbb,NEW,полный эпик,
-3,Subtask,ccc,NEW,первая подзадача,2,
-4,Subtask,ddd,NEW,вторя подзадача,2,
-5,Subtask,eee,NEW,третья подзадача,2,
+1,Task,testTask,NEW,Test
+1,Epic,aaa,NEW,пустой эпик
+2,Epic,testEpic,NEW,Test
+3,Subtask,testSubtask,NEW,Test,2
+4,Subtask,ddd,NEW,вторя подзадача,2
+5,Subtask,eee,NEW,третья подзадача,2
 
-5,1,

@@ -1,16 +1,48 @@
 package model;
 
-public class Task {
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+
+public class Task implements Comparable<Task> {
     protected String name;
     protected String description;
     protected int ID;
     protected TaskStatus status;
+    protected long duration;
+    protected LocalDateTime startTime;
+    protected final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-    public Task(String name, String description, int id, TaskStatus status) {
+    @Override
+    public int compareTo(Task task) {
+        if (this.startTime == null)
+            return 1;
+        if (task.startTime == null)
+            return -1;
+
+        if (this.startTime.isBefore(task.startTime))
+            return -1;
+        else if (this.startTime.isAfter(task.startTime))
+            return 1;
+        else
+            return 0;
+    }
+
+    public Task(String name, String description, TaskStatus status) {
         this.name = name;
         this.description = description;
-        this.ID = id;
         this.status = status;
+        this.duration = 0;
+        this.startTime = null;
+    }
+
+    public Task(String name, String description, int ID, TaskStatus status) {
+        this.name = name;
+        this.description = description;
+        this.ID = ID;
+        this.status = status;
+        this.duration = 0;
+        this.startTime = null;
     }
 
     public String getName() {
@@ -45,6 +77,41 @@ public class Task {
         this.status = status;
     }
 
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null)
+            return startTime.plusMinutes(duration);
+        else
+            return null;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    static public DateTimeFormatter getFormater() {
+        return formatter;
+    }
+
+    protected String timeToString(LocalDateTime time) {
+        String result;
+        if (time != null)
+            result = time.format(formatter);
+        else
+            result = " ";
+        return result;
+    }
 
     @Override
     public String toString() {
@@ -52,7 +119,24 @@ public class Task {
                 "Task," +
                 name + "," +
                 status + "," +
-                description + ",";
+                description + "," +
+                " " + "," +
+                timeToString(startTime) + "," +
+                timeToString(getEndTime()) + "," +
+                duration;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return ID == task.ID && Objects.equals(name, task.name) && Objects.equals(description, task.description) && status == task.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description, ID, status);
     }
 }
 

@@ -1,3 +1,6 @@
+package Managers;
+
+import Interface.HistoryManager;
 import exception.ManagerSaveException;
 import model.Epic;
 import model.Subtask;
@@ -7,11 +10,14 @@ import model.TaskStatus;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private static File autoSave;
+    private static final DateTimeFormatter formatter = Task.getFormater();
 
     public FileBackedTasksManager(String nameAutoSaveFile) {
         try {
@@ -28,10 +34,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void save() {
+    public void save() {
         try (FileWriter fileWriter = new FileWriter(autoSave)) {
             //Записываем формат записи
-            fileWriter.write("id,type,name,status,description,epic\n");
+            fileWriter.write("id,type,name,status,description,epic,startTime,endTime,duration\n");
             //Записываем все задачи
             for (Task task : getAllTasks()) {
                 fileWriter.write(task.toString() + "\n");
@@ -63,9 +69,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     else
                         throw new ManagerSaveException("Не удалось считать задачу");
                 } else {
-                    //если строка пустя значит следущая строка будет с историей, пропускаем пустую строку и считываем историю
+                    //если строка пустая значит следующая строка будет с историей, пропускаем пустую строку и считываем историю
                     String lineHistory = br.readLine();
-                    historyFromString(lineHistory);
+                    if (lineHistory != null)
+                        historyFromString(lineHistory);
                 }
             }
         } catch (IOException e) {
@@ -75,17 +82,49 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private static Task fromString(String line) {
         String[] dataString = line.split(",");
+        //id,type,name,status,description,epic,startTime,endTime,duration
+        int ID = Integer.parseInt(dataString[0]);
+        String type = dataString[1];
+        String name = dataString[2];
         TaskStatus taskStatus = TaskStatus.valueOf(dataString[3]);
-        switch (dataString[1]) {
+        String description = dataString[4];
+
+        int IdEpic;
+        if (!dataString[5].equals(" "))
+            IdEpic = Integer.parseInt(dataString[5]);
+        else
+            IdEpic = -1;
+
+        LocalDateTime startTime;
+        if (!dataString[6].equals(" "))
+            startTime = LocalDateTime.parse(dataString[6], formatter);
+        else
+            startTime = null;
+
+        long duration;
+        if (!dataString[8].equals(" "))
+            duration = Long.parseLong(dataString[8]);
+        else
+            duration = 0;
+
+        switch (type) {
             case ("Task"): {
-                return new Task(dataString[2], dataString[4], Integer.parseInt(dataString[0]), taskStatus);
+                Task task = new Task(name, description, ID, taskStatus);
+                task.setStartTime(startTime);
+                task.setDuration(duration);
+                return task;
             }
             case ("Epic"): {
-                return new Epic(dataString[2], dataString[4], Integer.parseInt(dataString[0]), taskStatus);
+                Epic epic = new Epic(name, description, ID, taskStatus);
+                epic.setStartTime(startTime);
+                epic.setDuration(duration);
+                return epic;
             }
             case ("Subtask"): {
-                Subtask subtask = new Subtask(dataString[2], dataString[4], Integer.parseInt(dataString[0]), taskStatus);
-                subtask.setIdEpic(Integer.parseInt(dataString[5]));
+                Subtask subtask = new Subtask(name, description, ID, taskStatus);
+                subtask.setIdEpic(IdEpic);
+                subtask.setStartTime(startTime);
+                subtask.setDuration(duration);
                 return subtask;
             }
         }
@@ -165,6 +204,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void updateSubtask(Subtask subtask) {
         super.updateSubtask(subtask);
         save();
+    }
+
+    @Override
+    public List<Task> getAllTasks() {
+        List<Task> tasks = super.getAllTasks();
+        return tasks;
     }
 
     @Override
