@@ -1,7 +1,7 @@
-package Tests;
+package tests;
 
-import Managers.InMemoryHistoryManager;
-import Managers.Managers;
+import managers.InMemoryHistoryManager;
+import managers.Managers;
 import model.Epic;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;

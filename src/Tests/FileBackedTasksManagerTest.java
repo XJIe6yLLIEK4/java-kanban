@@ -1,7 +1,7 @@
-package Tests;
+package tests;
 
-import Managers.FileBackedTasksManager;
-import Managers.Managers;
+import managers.FileBackedTasksManager;
+import managers.Managers;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -25,31 +25,20 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     public void createFileBackedManager() {
         taskManager = Managers.getDefault(nameFileAutoSave);
         list = new ArrayList<>();
-        taskManager.removeAllTasks();
     }
 
     @Test
-    void read() {
+    void read() throws IOException {
         File autoSave = new File(nameFileAutoSave);
-
-        try {
-            FileBackedTasksManager.read(autoSave);
-            assertEquals(list, taskManager.getAllTasks(), "Файл не пустой после создания");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try (FileWriter fileWriter = new FileWriter(autoSave)) {
+        FileWriter fileWriter = new FileWriter(autoSave);
             fileWriter.write("id,type,name,status,description,epic,startTime,endTime,duration\n");
             fileWriter.write("1,Task,Test,NEW,Test, ,17.09.2023 16:37,17.09.2023 17:07,30\n");
             fileWriter.write("2,Epic,Test,NEW,Test, , , ,0\n");
             fileWriter.write("\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            fileWriter.close();
 
-        try {
-            FileBackedTasksManager.read(autoSave);
+        System.out.println(Files.readAllLines(autoSave.toPath()).get(0));
+            taskManager = FileBackedTasksManager.read(autoSave);
             Task task = new Task("Test", "Test", 1, NEW);
             task.setStartTime(LocalDateTime.parse("17.09.2023 16:37", Task.getFormater()));
             task.setDuration(30);
@@ -63,25 +52,11 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
             list.add(epic);
             assertEquals(2, taskManager.getHistory().size(), "Неверное количество задач в истории");
             assertEquals(list, taskManager.getHistory(), "Неверно считана задача из истории");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Test
-    void save() {
+    void save() throws IOException {
         File autoSave = new File(nameFileAutoSave);
-
-        try (FileReader fileReader = new FileReader(autoSave); BufferedReader br = new BufferedReader(fileReader)) {
-            assertEquals("id,type,name,status,description,epic,startTime,endTime,duration", br.readLine(), "Не совпадает формат записи");
-            while (br.ready()) {
-                String actualString = br.readLine();
-                assertEquals("", actualString, "Файл не пустой после создания: " + actualString);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         try (FileReader fileReader = new FileReader(autoSave); BufferedReader br = new BufferedReader(fileReader)) {
             Task task = new Task("Test", "Test", 1, NEW);
             task.setStartTime(LocalDateTime.parse("17.09.2023 16:37", Task.getFormater()));
@@ -98,8 +73,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
             taskManager.getTask(1);
             String history = Files.readAllLines(Path.of(autoSave.getPath())).get(4);
             assertEquals("1,", history, "История неверно сохранилась");
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public class Task implements Comparable<Task> {
+public class Task {
     protected String name;
     protected String description;
     protected int ID;
@@ -13,20 +13,7 @@ public class Task implements Comparable<Task> {
     protected LocalDateTime startTime;
     protected final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-    @Override
-    public int compareTo(Task task) {
-        if (this.startTime == null)
-            return 1;
-        if (task.startTime == null)
-            return -1;
 
-        if (this.startTime.isBefore(task.startTime))
-            return -1;
-        else if (this.startTime.isAfter(task.startTime))
-            return 1;
-        else
-            return 0;
-    }
 
     public Task(String name, String description, TaskStatus status) {
         this.name = name;

@@ -1,30 +1,49 @@
-package Managers;
+package managers;
 
-import Interface.HistoryManager;
-import Interface.TaskManager;
+import interfaces.HistoryManager;
+import interfaces.TaskManager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private static Map<Integer, Task> mapTasks = new HashMap<>();
-    private static Map<Integer, Epic> mapEpic = new HashMap<>();
-    private static Map<Integer, Subtask> mapSubtask = new HashMap<>();
-    private HistoryManager historyManager = Managers.getDefaultHistory();
-    private TreeSet<Task> prioritizedTasks = new TreeSet<>();
-    int ID = 0;
+    private final Map<Integer, Task> mapTasks = new HashMap<>();
+    private final Map<Integer, Epic> mapEpic = new HashMap<>();
+    private final Map<Integer, Subtask> mapSubtask = new HashMap<>();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    //При таком решении компилятор выдает нулПоинтЭкспрешнон для задач, у которых не указанно время старта
+    //private TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    Comparator<Task> comparator = (o1, o2) -> {
+        if (o1.getStartTime() == null)
+            return 1;
+        if (o2.getStartTime() == null)
+            return -1;
+
+        if (o1.getStartTime().isBefore(o2.getStartTime()))
+            return -1;
+        else if (o1.getStartTime().isAfter(o2.getStartTime()))
+            return 1;
+        else
+            return 0;
+    };
+    private final TreeSet<Task> prioritizedTasks = new TreeSet<>(comparator);
+    private int ID = 0;
 
     public HistoryManager getHistoryManager() {
         return historyManager;
     }
 
     public TreeSet<Task> getPrioritizedTasks() {
-        prioritizedTasks = new TreeSet<>(getAllTask());
-        prioritizedTasks.addAll(getAllSubtasks());
         return prioritizedTasks;
+    }
+
+    public Map<Integer, Task> getMapTasks() {
+        return mapTasks;
     }
 
     @Override
@@ -103,44 +122,47 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    public boolean isValidation(Task task) {
+        System.out.println();
+        if (getPrioritizedTasks().isEmpty() || task.getStartTime() == null) {
+            return true;
+        } else {
+            boolean validation = true;
+            System.out.println("SetList: " + getPrioritizedTasks());
+            for (Task t : getPrioritizedTasks()) {
+                System.out.println(t);
+                if (t.getStartTime() == null)
+                    continue;
+                LocalDateTime start1 = task.getStartTime();
+                LocalDateTime end1 = task.getEndTime();
+                LocalDateTime start2 = t.getStartTime();
+                LocalDateTime end2 = t.getEndTime();
+
+                Duration intersection = Duration.between(
+                        start1.isAfter(start2) ? start1 : start2,
+                        end1.isBefore(end2) ? end1 : end2);
+                //Если интервал отрицательный значит отрезки не пересекаются
+                if (!intersection.isNegative())
+                    validation = false;
+            }
+            return validation;
+        }
+    }
+
     @Override
     public void createTask(Task task) {
-        if (getPrioritizedTasks().isEmpty() || task.getStartTime() == null) {
+        if (isValidation(task)) {
             ID++;
             //Создаем задачу
             task.setID(ID);
             mapTasks.put(ID, task);
-
-        } else {
-            Task taskBefore = getPrioritizedTasks().lower(task);
-            Task taskAfter = getPrioritizedTasks().higher(task);
-
-            boolean firstCondition;
-            if (taskBefore != null)
-                firstCondition = taskBefore.getEndTime().isBefore(task.getStartTime());
-            else
-                firstCondition = true;
-
-            boolean secondCondition;
-            if (taskAfter != null)
-                secondCondition = taskAfter.getStartTime().isAfter(task.getEndTime());
-            else
-                secondCondition = true;
-
-            boolean isNotOverlapTime = firstCondition && secondCondition;
-
-            if (isNotOverlapTime) {
-                ID++;
-                //Создаем задачу
-                task.setID(ID);
-                mapTasks.put(ID, task);
-            }
+            getPrioritizedTasks().add(task);
         }
     }
 
     @Override
     public void createSubtask(Subtask subtask, int epicID) {
-        if (getPrioritizedTasks().isEmpty() || subtask.getStartTime() == null) {
+        if (isValidation(subtask)) {
             ID++;
             //Создаем подзадачу
             subtask.setID(ID);
@@ -148,33 +170,7 @@ public class InMemoryTaskManager implements TaskManager {
             mapSubtask.put(subtask.getID(), subtask);
             mapEpic.get(epicID).putSubtask(subtask);
             mapEpic.get(subtask.getIdEpic()).updateStatus();
-        } else {
-            Task subtaskBefore = getPrioritizedTasks().lower(subtask);
-            Task subtaskAfter = getPrioritizedTasks().higher(subtask);
-
-            boolean firstCondition;
-            if (subtaskBefore != null)
-                firstCondition = subtaskBefore.getEndTime().isBefore(subtask.getStartTime());
-            else
-                firstCondition = true;
-
-            boolean secondCondition;
-            if (subtaskAfter != null)
-                secondCondition = subtaskAfter.getStartTime().isAfter(subtask.getEndTime());
-            else
-                secondCondition = true;
-
-            boolean isNotOverlapTime = firstCondition && secondCondition;
-
-            if (isNotOverlapTime) {
-                ID++;
-                //Создаем подзадачу
-                subtask.setID(ID);
-                subtask.setIdEpic(epicID);
-                mapSubtask.put(subtask.getID(), subtask);
-                mapEpic.get(epicID).putSubtask(subtask);
-                mapEpic.get(subtask.getIdEpic()).updateStatus();
-            }
+            getPrioritizedTasks().add(subtask);
         }
     }
 
@@ -186,15 +182,15 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
-    public static void addTask(Task task) {
+    public void addTask(Task task) {
         mapTasks.put(task.getID(), task);
     }
 
-    public static void addEpic(Epic epic) {
+    public void addEpic(Epic epic) {
         mapEpic.put(epic.getID(), epic);
     }
 
-    public static void addSubtask(Subtask subtask) {
+    public void addSubtask(Subtask subtask) {
         mapSubtask.put(subtask.getID(), subtask);
     }
 
@@ -202,8 +198,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task task) {
         if (mapTasks.containsKey(task.getID())) {
             mapTasks.put(task.getID(), task);
-        } else {
-            return;
         }
     }
 
@@ -211,8 +205,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateEpic(Epic epic) {
         if (mapEpic.containsKey(epic.getID())) {
             mapEpic.put(epic.getID(), epic);
-        } else {
-            return;
         }
     }
 
@@ -221,8 +213,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (mapSubtask.containsKey(subtask.getID())) {
             mapSubtask.put(subtask.getID(), subtask);
             mapEpic.get(subtask.getIdEpic()).updateStatus();
-        } else {
-            return;
         }
     }
 

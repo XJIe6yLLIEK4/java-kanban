@@ -1,4 +1,4 @@
-package Tests;
+package tests;
 
 import model.Epic;
 import model.Subtask;
@@ -79,7 +79,7 @@ class EpicTest {
         subtask2.setStartTime(LocalDateTime.MIN.plusMinutes(60));
         subtask2.setDuration(40);
         epic.putSubtask(subtask2);
-        Assertions.assertEquals(result, epic.getEndTime(), "Неправильно посчитано время окончания эпика");
-        Assertions.assertEquals(100, epic.getDuration(), "Неправильно рассчитана продолжительность эпика");
+        Assertions.assertEquals(result, epic.getEndTime(), "РќРµРїСЂР°РІРёР»СЊРЅРѕ РїРѕСЃС‡РёС‚Р°РЅРѕ РІСЂРµРјСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ СЌРїРёРєР°");
+        Assertions.assertEquals(100, epic.getDuration(), "РќРµРїСЂР°РІРёР»СЊРЅРѕ СЂР°СЃСЃС‡РёС‚Р°РЅР° РїСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚СЊ СЌРїРёРєР°");
     }
 }

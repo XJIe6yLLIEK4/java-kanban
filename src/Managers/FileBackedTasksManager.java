@@ -1,6 +1,6 @@
-package Managers;
+package managers;
 
-import Interface.HistoryManager;
+import interfaces.HistoryManager;
 import exception.ManagerSaveException;
 import model.Epic;
 import model.Subtask;
@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private static File autoSave;
@@ -22,15 +23,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public FileBackedTasksManager(String nameAutoSaveFile) {
         try {
             Files.createFile(Paths.get(nameAutoSaveFile));
-            this.autoSave = new File(nameAutoSaveFile);
+            autoSave = new File(nameAutoSaveFile);
         } catch (IOException e) {
             System.out.println("Файл автосохранения уже создан");
-            this.autoSave = new File(nameAutoSaveFile);
-            try {
-                read(autoSave);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            autoSave = new File(nameAutoSaveFile);
         }
     }
 
@@ -50,7 +46,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public static void read(File autoSave) throws IOException {
+    public static FileBackedTasksManager read(File autoSave) throws IOException {
+        FileBackedTasksManager tasksManager = new FileBackedTasksManager(autoSave.getName());
         try (FileReader fileReader = new FileReader(autoSave); BufferedReader br = new BufferedReader(fileReader)) {
             //пропускаем первую строчку
             br.readLine();
@@ -61,11 +58,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     Task task = fromString(line);
                     //Распределяем задачи по мапам
                     if (task.getClass() == Task.class)
-                        addTask(task);
+                        tasksManager.addTask(task);
                     else if (task.getClass() == Epic.class)
-                        addEpic((Epic) task);
+                        tasksManager.addEpic((Epic) task);
                     else if (task.getClass() == Subtask.class)
-                        addSubtask((Subtask) task);
+                        tasksManager.addSubtask((Subtask) task);
                     else
                         throw new ManagerSaveException("Не удалось считать задачу");
                 } else {
@@ -78,6 +75,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка чтения файла");
         }
+        return tasksManager;
     }
 
     private static Task fromString(String line) {
@@ -144,6 +142,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         for (String string : strings)
             history.add(Integer.parseInt(string));
         return history;
+    }
+
+    @Override
+    public Map<Integer, Task> getMapTasks() {
+        return super.getMapTasks();
     }
 
     @Override

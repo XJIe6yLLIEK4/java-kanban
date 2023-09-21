@@ -1,6 +1,4 @@
-package Managers;
-
-import Interface.HistoryManager;
+package managers;
 
 public final class Managers {
 
