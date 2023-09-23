@@ -20,7 +20,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager>{
     }
 
     @Test
-    void SortTask(){
+    void sortTask(){
         Task task = new Task("testTask", "Test", TaskStatus.NEW);
         task.setStartTime(LocalDateTime.MIN);
         taskManager.createTask(task);
@@ -40,6 +40,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager>{
         Subtask subtask = new Subtask("testSubtask", "Test", TaskStatus.NEW);
         subtask.setStartTime(LocalDateTime.parse("17.09.2023 18:00", Task.getFormater()));
         taskManager.createSubtask(subtask, epic.getID());
+        System.out.println("список всех задача: " + taskManager.getAllTasks());
         Assertions.assertEquals(5, taskManager.getPrioritizedTasks().size(), "Неверное количество задач в отсортированном списке");
         Assertions.assertEquals("[1,Task,testTask,NEW,Test, ,01.01.+1000000000 00:00,01.01.+1000000000 00:00,0, " +
                 "6,Subtask,testSubtask,NEW,Test,5,17.09.2023 18:00,17.09.2023 18:00,0, " +

@@ -5,7 +5,6 @@ import interfaces.TaskManager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -17,19 +16,14 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Subtask> mapSubtask = new HashMap<>();
     private final HistoryManager historyManager = Managers.getDefaultHistory();
     //При таком решении компилятор выдает нулПоинтЭкспрешнон для задач, у которых не указанно время старта
-    //private TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    //private final TreeSet<Task> prioritizedTasks = new TreeSet<>(comparator);
+    //Методы nullsLast и nullsFirst все нули считают равными, поэтому с таким компаратором в SetList после добавления
+    // первого нуля, следующие не добавляются
     Comparator<Task> comparator = (o1, o2) -> {
-        if (o1.getStartTime() == null)
-            return 1;
-        if (o2.getStartTime() == null)
-            return -1;
-
-        if (o1.getStartTime().isBefore(o2.getStartTime()))
-            return -1;
-        else if (o1.getStartTime().isAfter(o2.getStartTime()))
+        if (o1.getStartTime() == null || o2.getStartTime() == null)
             return 1;
         else
-            return 0;
+            return o1.getStartTime().compareTo(o2.getStartTime());
     };
     private final TreeSet<Task> prioritizedTasks = new TreeSet<>(comparator);
     private int ID = 0;
@@ -73,6 +67,7 @@ public class InMemoryTaskManager implements TaskManager {
         mapTasks.clear();
         mapEpic.clear();
         mapSubtask.clear();
+        getPrioritizedTasks().clear();
         System.out.println("Все задачи удалены");
     }
 
@@ -197,7 +192,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateTask(Task task) {
         if (mapTasks.containsKey(task.getID())) {
-            mapTasks.put(task.getID(), task);
+            getPrioritizedTasks().remove(mapTasks.get(task.getID()));
+            if (isValidation(task)) {
+                mapTasks.put(task.getID(), task);
+                getPrioritizedTasks().add(task);
+            } else {
+                getPrioritizedTasks().add(mapTasks.get(task.getID()));
+            }
         }
     }
 
@@ -211,13 +212,20 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(Subtask subtask) {
         if (mapSubtask.containsKey(subtask.getID())) {
-            mapSubtask.put(subtask.getID(), subtask);
-            mapEpic.get(subtask.getIdEpic()).updateStatus();
+            getPrioritizedTasks().remove(mapSubtask.get(subtask.getID()));
+            if (isValidation(subtask)) {
+                mapSubtask.put(subtask.getID(), subtask);
+                mapEpic.get(subtask.getIdEpic()).updateStatus();
+                getPrioritizedTasks().add(subtask);
+            } else {
+                getPrioritizedTasks().add(mapSubtask.get(subtask.getID()));
+            }
         }
     }
 
     @Override
     public void removeTask(int ID) {
+        getPrioritizedTasks().remove(mapTasks.get(ID));
         mapTasks.remove(ID);
         historyManager.remove(ID);
     }
@@ -236,6 +244,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeSubtask(int ID) {
+        getPrioritizedTasks().remove(mapSubtask.get(ID));
         Epic epic = mapEpic.get(mapSubtask.get(ID).getIdEpic());
         epic.removeSubtask(ID);
         epic.updateStatus();

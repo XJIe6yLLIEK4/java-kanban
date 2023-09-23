@@ -13,18 +13,18 @@ class EpicTest {
 
     Epic epic;
     @BeforeEach
-    public void CreateEpic() {
+    public void createEpic() {
         epic = new Epic("TestEpic", "TestEpic", 0, TaskStatus.NEW);
     }
 
     @Test
-    public void EpicStatusIsNewWhenIsEmpty() {
+    public void epicStatusIsNewWhenIsEmpty() {
         epic.updateStatus();
         Assertions.assertEquals(TaskStatus.NEW, epic.getStatus());
     }
 
     @Test
-    public void EpicStatusIsNewWhenAllSubtaskIsNew() {
+    public void epicStatusIsNewWhenAllSubtaskIsNew() {
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 1, TaskStatus.NEW));
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 2, TaskStatus.NEW));
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 3, TaskStatus.NEW));
@@ -33,7 +33,7 @@ class EpicTest {
     }
 
     @Test
-    public void EpicStatusIsNewWhenAllSubtaskIsDone() {
+    public void epicStatusIsNewWhenAllSubtaskIsDone() {
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 1, TaskStatus.DONE));
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 2, TaskStatus.DONE));
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 3, TaskStatus.DONE));
@@ -42,7 +42,7 @@ class EpicTest {
     }
 
     @Test
-    public void EpicStatusIsNewWhenAllSubtaskIsDoneAndNew() {
+    public void epicStatusIsNewWhenAllSubtaskIsDoneAndNew() {
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 1, TaskStatus.DONE));
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 2, TaskStatus.NEW));
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 3, TaskStatus.DONE));
@@ -51,7 +51,7 @@ class EpicTest {
     }
 
     @Test
-    public void EpicStatusIsNewWhenAllSubtaskIsInProgress() {
+    public void epicStatusIsNewWhenAllSubtaskIsInProgress() {
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 1, TaskStatus.IN_PROGRESS));
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 2, TaskStatus.IN_PROGRESS));
         epic.putSubtask(new Subtask("TestSubtask", "TestSubtask", 3, TaskStatus.IN_PROGRESS));
@@ -60,7 +60,7 @@ class EpicTest {
     }
 
     @Test
-    public void EpicTimeIsNullWhenListSubtaskIsEmpty() {
+    public void epicTimeIsNullWhenListSubtaskIsEmpty() {
         Assertions.assertNull(epic.getEndTime());
         Assertions.assertNull(epic.getStartTime());
         Assertions.assertEquals(0, epic.getDuration());
