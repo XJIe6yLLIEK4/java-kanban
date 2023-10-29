@@ -15,10 +15,6 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Epic> mapEpic = new HashMap<>();
     private final Map<Integer, Subtask> mapSubtask = new HashMap<>();
     private final HistoryManager historyManager = Managers.getDefaultHistory();
-    //При таком решении компилятор выдает нулПоинтЭкспрешнон для задач, у которых не указанно время старта
-    //private final TreeSet<Task> prioritizedTasks = new TreeSet<>(comparator);
-    //Методы nullsLast и nullsFirst все нули считают равными, поэтому с таким компаратором в SetList после добавления
-    // первого нуля, следующие не добавляются
     Comparator<Task> comparator = (o1, o2) -> {
         if (o1.getStartTime() == null || o2.getStartTime() == null)
             return 1;
@@ -38,6 +34,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     public Map<Integer, Task> getMapTasks() {
         return mapTasks;
+    }
+    public Map<Integer, Epic> getMapEpic() {
+        return mapEpic;
+    }
+    public Map<Integer, Subtask> getMapSubtask() {
+        return mapSubtask;
     }
 
     @Override

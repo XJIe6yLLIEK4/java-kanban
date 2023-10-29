@@ -21,12 +21,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private static final DateTimeFormatter formatter = Task.getFormater();
 
     public FileBackedTasksManager(String nameAutoSaveFile) {
-        try {
-            Files.createFile(Paths.get(nameAutoSaveFile));
-            autoSave = new File(nameAutoSaveFile);
-        } catch (IOException e) {
-            System.out.println("Файл автосохранения уже создан");
-            autoSave = new File(nameAutoSaveFile);
+        if (nameAutoSaveFile != null) {
+            try {
+                Files.createFile(Paths.get(nameAutoSaveFile));
+                autoSave = new File(nameAutoSaveFile);
+            } catch (IOException e) {
+                System.out.println("Файл автосохранения уже создан");
+                autoSave = new File(nameAutoSaveFile);
+            }
         }
     }
 
@@ -148,6 +150,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public Map<Integer, Task> getMapTasks() {
         return super.getMapTasks();
     }
+    @Override
+    public Map<Integer, Epic> getMapEpic() {
+        return super.getMapEpic();
+    }
+    @Override
+    public Map<Integer, Subtask> getMapSubtask() {
+        return super.getMapSubtask();
+    }
 
     @Override
     public void removeAllTasks() {
@@ -211,8 +221,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public List<Task> getAllTasks() {
-        List<Task> tasks = super.getAllTasks();
-        return tasks;
+        return super.getAllTasks();
     }
 
     @Override

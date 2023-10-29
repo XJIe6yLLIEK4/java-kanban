@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
+    protected String clazz = "Task";
     protected String name;
     protected String description;
     protected int ID;
@@ -30,6 +31,10 @@ public class Task {
         this.status = status;
         this.duration = 0;
         this.startTime = null;
+    }
+
+    public void setClazz(String clazz) {
+        this.clazz = clazz;
     }
 
     public String getName() {

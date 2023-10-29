@@ -3,12 +3,15 @@ package model;
 import java.util.Objects;
 
 public class Subtask extends Task {
+    //String clazz = "Subtask";
 
     public Subtask(String name, String description, int ID, TaskStatus status) {
         super(name, description, ID, status);
+        setClazz("Subtask");
     }
     public Subtask(String name, String description, TaskStatus status) {
         super(name, description, status);
+        setClazz("Subtask");
     }
 
     private int idEpic;

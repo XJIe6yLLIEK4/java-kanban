@@ -1,57 +1,44 @@
-import managers.FileBackedTasksManager;
+import api.KVServer;
+import managers.HttpTaskManager;
+import managers.Managers;
+import model.Epic;
+import model.Subtask;
 import model.Task;
 import model.TaskStatus;
-import java.util.Scanner;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class Main {
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) throws IOException {
+        KVServer server = new KVServer();
+        server.start();
 
-        FileBackedTasksManager manager = new FileBackedTasksManager("autoSave.txt");
+        HttpTaskManager taskManager = Managers.getDefault("http://localhost:8078/");
 
-        while (true) {
-            System.out.println("1 - Создать задачу");
-            System.out.println("2 - Удалить задачу");
-            System.out.println("3 - Обновить задачу");
-            System.out.println("4 - Посмотреть все задачи");
-            System.out.println("5 - Удалить все задачи");
-            System.out.println("6 - Посмотреть задачу");
-            System.out.println("7 - Посмотреть все подзадачи эпика");
-            System.out.println("0 - выход");
-            int answer = scanner.nextInt();
-            Task task = new Task("TestTask", "description", TaskStatus.NEW);
+        Task task2 = new Task("testTask2", "Test2", TaskStatus.NEW);
+        taskManager.createTask(task2);
 
-            switch (answer) {
-                case (1):
-                    manager.createTask(task);
-                    break;
-                case (2):
-                    System.out.println("Какую задачу хотите удалить?");
-                    manager.removeTask(scanner.nextInt());
-                    break;
-                case (3):
-                    manager.updateTask(task);
-                    break;
-                case (4):
-                    System.out.println(manager.getAllTasks());
-                    System.out.println(manager.getAllEpic());
-                    System.out.println(manager.getAllSubtasks());
-                    break;
-                case (5):
-                    manager.removeAllTasks();
-                    break;
-                case (6):
-                    System.out.println("Какую задачу показать?");
-                    System.out.println(manager.getTask(scanner.nextInt()));
-                    break;
-                case (7):
-                    System.out.println("Подзадачи какого эпика показать?");
-                    manager.getEpicSubtasks(scanner.nextInt());
-                    break;
-                case (0):
-                    return;
-            }
-        }
+        Epic epic = new Epic("testEpic", "Test", 2, TaskStatus.NEW);
+        taskManager.createEpic(epic);
+
+        Subtask subtask = new Subtask("testSubtask", "Test", TaskStatus.NEW);
+        subtask.setStartTime(LocalDateTime.parse("17.09.2023 18:00", Task.getFormater()));
+        taskManager.createSubtask(subtask, 2);
+
+
+        System.out.println("Task: " + taskManager.getTask(1));
+
+        taskManager.removeTask(1);
+
+        taskManager.getEpic(2);
+        taskManager.getSubtask(3);
+        System.out.println("история задач");
+        System.out.println(taskManager.getHistory());
+
+
+        System.out.println("Все задачи:");
+        System.out.println(taskManager.getAllTasks());
     }
 }

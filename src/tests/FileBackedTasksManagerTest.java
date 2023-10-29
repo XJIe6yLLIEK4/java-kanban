@@ -23,7 +23,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
 
     @BeforeEach
     public void createFileBackedManager() {
-        taskManager = Managers.getDefault(nameFileAutoSave);
+        taskManager = new FileBackedTasksManager(nameFileAutoSave);
         list = new ArrayList<>();
     }
 

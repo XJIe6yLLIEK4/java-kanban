@@ -10,11 +10,14 @@ public class Epic extends Task {
     private List<Subtask> listTasks = new ArrayList<>();
     LocalDateTime endTime;
 
+
     public Epic(String name, String description, int ID, TaskStatus status) {
         super(name, description, ID, status);
+        setClazz("Epic");
     }
     public Epic(String name, String description, TaskStatus status) {
         super(name, description, status);
+        setClazz("Epic");
     }
 
     @Override
