@@ -236,7 +236,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeEpic(int ID) {
         for (Subtask subtask : mapSubtask.values()) {
             if (subtask.getIdEpic() == ID) {
-                mapSubtask.remove(subtask);
+                mapSubtask.remove(subtask.getID());
                 historyManager.remove(subtask.getID());
             }
         }

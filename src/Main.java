@@ -1,21 +1,43 @@
+import api.HttpTaskServer;
 import api.KVServer;
+import com.google.gson.Gson;
 import managers.HttpTaskManager;
+import managers.InMemoryTaskManager;
 import managers.Managers;
 import model.Epic;
 import model.Subtask;
 import model.Task;
 import model.TaskStatus;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-        KVServer server = new KVServer();
-        server.start();
+    public static void main(String[] args) throws IOException, InterruptedException {
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
-        HttpTaskManager taskManager = Managers.getDefault("http://localhost:8078/");
+        Task task = new Task("testTask", "Test", TaskStatus.NEW);
+        Epic epic = new Epic("testTask", "Test",  TaskStatus.NEW);
+        Subtask subtask = new Subtask("testTask", "Test", TaskStatus.NEW);
+        subtask.setIdEpic(2);
+
+        taskManager.createTask(task);
+        taskManager.createEpic(epic);
+        taskManager.createSubtask(subtask, 2);
+
+        System.out.println(taskManager.getAllTasks());
+        taskManager.removeEpic(2);
+        System.out.println(taskManager.getAllTasks());
+
+        /*HttpTaskManager taskManager = Managers.getDefault("http://localhost:8078/");
 
         Task task2 = new Task("testTask2", "Test2", TaskStatus.NEW);
         taskManager.createTask(task2);
@@ -40,5 +62,7 @@ public class Main {
 
         System.out.println("Все задачи:");
         System.out.println(taskManager.getAllTasks());
+
+         */
     }
 }

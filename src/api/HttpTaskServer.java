@@ -2,34 +2,33 @@ package api;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import adapters.LocalDateAdapter;
 import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import managers.FileBackedTasksManager;
+import managers.HttpTaskManager;
 import managers.Managers;
 import model.Epic;
 import model.Subtask;
 import model.Task;
-
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 
 public class HttpTaskServer {
-    final int PORT = 8003;
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateAdapter())
-            .create();
-    private final FileBackedTasksManager tasksManager = Managers.getDefault("autoSave");
+    final int PORT = 8002;
+    private final Gson gson = Managers.getGson();
+    private final HttpTaskManager tasksManager = Managers.getDefault("http://localhost:8078/");
+    private HttpServer httpServer;
 
     public void createServer() throws IOException {
-        HttpServer httpServer = HttpServer.create();
+        httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress("localhost", PORT), 0);
         httpServer.createContext("/tasks", this::handleTasks);
         httpServer.start();
+    }
+
+    public void stop() {
+        httpServer.stop(0);
     }
 
     private void handleTasks(HttpExchange httpExchange) {
@@ -43,8 +42,8 @@ public class HttpTaskServer {
                         System.out.println("Получил все задачи");
                         String response = gson.toJson(tasksManager.getAllTasks());
                         sendText(httpExchange, response);
-                        System.out.println("List subtask");
-                        System.out.println(tasksManager.getAllSubtasks());
+                        System.out.println("List Tasks");
+                        System.out.println(tasksManager.getAllTasks());
                         break;
                     }
 
@@ -268,18 +267,18 @@ public class HttpTaskServer {
         }
     }
 
-    protected void sendText(HttpExchange h, String text) throws IOException {
+    private void sendText(HttpExchange h, String text) throws IOException {
         byte[] resp = text.getBytes(UTF_8);
         h.getResponseHeaders().add("Content-Type", "application/json");
         h.sendResponseHeaders(200, resp.length);
         h.getResponseBody().write(resp);
     }
 
-    protected String readText(HttpExchange h) throws IOException {
+    private String readText(HttpExchange h) throws IOException {
         return new String(h.getRequestBody().readAllBytes(), UTF_8);
     }
 
-    protected void createTaskFromGson(JsonObject jsonObject, HttpExchange httpExchange) throws IOException {
+    private void createTaskFromGson(JsonObject jsonObject, HttpExchange httpExchange) throws IOException {
         String clazz = jsonObject.get("clazz").getAsString();
         switch (clazz) {
             case ("Task"):
@@ -309,7 +308,7 @@ public class HttpTaskServer {
         }
     }
 
-    protected void updateTaskFromGson(JsonObject jsonObject, HttpExchange httpExchange) throws IOException {
+    private void updateTaskFromGson(JsonObject jsonObject, HttpExchange httpExchange) throws IOException {
         String clazz = jsonObject.get("clazz").getAsString();
         switch (clazz) {
             case ("Task"):

@@ -21,9 +21,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
     private static final String HISTORY = "history";
 
     KVTaskClient taskClient;
-    private final Gson gson = new GsonBuilder()
-            .setDateFormat("dd.MM.yyyy HH:mm")
-            .create();
+    private final Gson gson = Managers.getGson();
 
     public HttpTaskManager(String url) throws MalformedURLException {
         super(null);

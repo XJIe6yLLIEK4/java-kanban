@@ -1,5 +1,7 @@
 package managers;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.net.MalformedURLException;
 
 public final class Managers {
@@ -15,5 +17,11 @@ public final class Managers {
 
     public static InMemoryHistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
+    }
+
+    public static Gson getGson() {
+         return new GsonBuilder()
+                 .setDateFormat("dd.MM.yyyy HH:mm")
+                 .create();
     }
 }
